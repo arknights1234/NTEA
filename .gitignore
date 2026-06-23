@@ -6,3 +6,4 @@ pyvenv.cfg
 /images/screenshot.png
 config.json
 test.py
+__pycache__
