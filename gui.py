@@ -630,13 +630,24 @@ class MainGUI(ctk.CTk):
             self.update_btn.configure(state="disabled", text="최신 버전 확인 완료", fg_color="#555555")
 
     def start_update(self):
+        import threading
         import updater
-        self.update_btn.configure(state="disabled", text="업데이트 다운로드 중...")
-        self.status_lbl.configure(text="GitHub에서 다운로드하는 중입니다...", text_color="#ffffff")
         
+        self.update_btn.configure(state="disabled", text="다운로드 중...")
+        self.status_lbl.configure(text="GitHub에서 다운로드를 시작합니다", text_color="#ffffff")
         self.update_idletasks()
         
-        updater.download_and_install()
+        t = threading.Thread(target=updater.download_and_install, args=(self.update_progress_callback,))
+        t.daemon = True 
+        t.start()
+
+    def update_progress_callback(self, percent, current_mb, total_mb):
+        def update_ui():
+            self.status_lbl.configure(
+                text=f"다운로드 중... {percent}% ({current_mb:.1f}MB / {total_mb:.1f}MB)", 
+                text_color="#4dabf7"
+            )
+        self.after(0, update_ui)
 
     def run_screenshot_test(self):
         self.status_lbl.configure(text="")
