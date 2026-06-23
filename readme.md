@@ -1,1 +1,0 @@
-pip install opencv-python numpy pillow mss keyboard pynput pywin32 customtkinter

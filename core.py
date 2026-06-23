@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import ctypes
 import cv2
@@ -74,6 +75,52 @@ class BITMAPINFOHEADER(ctypes.Structure):
 class BITMAPINFO(ctypes.Structure):
     _fields_ = [('bmiHeader', BITMAPINFOHEADER), ('bmiColors', wintypes.DWORD * 3)]
 
+def resource_path(relative_path):
+    """ PyInstaller 단일 파일 환경에서 이미지 등 자산의 실제 경로를 반환합니다 """
+    try:
+        # PyInstaller가 압축을 푸는 임시 폴더 경로 (_MEIPASS)
+        base_path = sys._MEIPASS
+    except Exception:
+        # 일반 .py 실행 환경일 때의 현재 폴더 경로
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+def imread_korean(file_path):
+    """ 일반 실행과 .exe 단일 파일 환경을 모두 지원하는 한국어 경로 이미지 로더 """
+    # 1. 사용자가 넘긴 원본 경로를 보관 (예: "images/별미카페/도시타이쿤.png")
+    clean_path = os.path.normpath(file_path)
+    
+    # 2. 만약 절대경로로 들어왔다면, 내장 자산으로 처리하기 위해 앞부분을 날리고 상대경로화 시도
+    # (일반 파이썬 실행 시 os.path.isabs가 걸리는 경우 방지)
+    if os.path.isabs(clean_path):
+        # 현재 작업 디렉토리 기준 상대경로로 역변환
+        try:
+            clean_path = os.path.relpath(clean_path, os.getcwd())
+        except Exception:
+            pass
+
+    # 3. [핵심] PyInstaller 임시 폴더 내에서 상대경로로 먼저 찾기
+    real_path = resource_path(clean_path)
+
+    # 4. 만약 임시 폴더에 없다면 (일반 개발 환경이거나 exe 밖에 두고 쓰는 폴더일 때)
+    if not os.path.exists(real_path):
+        # 원래 실행 파일이 위치한 실제 하드디스크 경로에서 찾기
+        real_path = os.path.normpath(os.path.join(os.getcwd(), clean_path))
+
+    # 5. 최종 검증 후 이미지 로드
+    if not os.path.exists(real_path):
+        print(f"파일이 존재하지 않습니다: {real_path}")
+        return None, "파일 없음"
+    
+    try:
+        with open(real_path, "rb") as f:
+            chunk = np.frombuffer(f.read(), np.uint8)
+            img = cv2.imdecode(chunk, cv2.IMREAD_COLOR) 
+        return img, None
+    except Exception as e:
+        return None, f"디코딩 실패: {str(e)}"
+
 def _get_game_hwnd(window_title="NTE"):
     target_hwnd = None
     def callback(hwnd, extra):
@@ -120,32 +167,20 @@ def capture_game_window(window_title="NTE"):
 
     image = Image.frombuffer("RGBA", (width, height), buffer, "raw", "BGRA", 0, 1).convert("RGB")
     
-    # 5. 저장
-    save_dir = "images"
-    if not os.path.exists(save_dir): os.makedirs(save_dir)
-    full_path = os.path.join(save_dir, "screenshot.png")
-    image.save(full_path)
-
-    # 6. 자원 해제
     Gdi32.SelectObject(hdc_mem, old_bitmap)
     Gdi32.DeleteObject(hbitmap)
     Gdi32.DeleteDC(hdc_mem)
     User32.ReleaseDC(target_hwnd, hdc_screen)
 
-    return full_path, None
+    return image, None
 
 def click_game_active_window():
-
-    # 마우스 클릭 이벤트 구성
-    extra = ctypes.c_ulong(0)
-    
-    # 클릭 다운
-    down = ctypes.create_string_buffer(ctypes.sizeof(ctypes.c_long) * 10) 
     ctypes.windll.user32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
     time.sleep(0.05)
     ctypes.windll.user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 
 def click_game_window(x, y, window_title="NTE"):
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -165,6 +200,7 @@ def click_game_window(x, y, window_title="NTE"):
         return False, f"클릭 메시지 주입 실패: {str(e)}"
 
 def click_game_window2(x, y, window_title="NTE"):
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -231,12 +267,10 @@ def active_window(window_title="NTE"):
         
     User32.SetForegroundWindow(target_hwnd) # 맨 앞으로 가져오기
     User32.SetActiveWindow(target_hwnd)     # 활성화 잠금
+    time.sleep(0.05)
 
 def press_game_key(key_name, press_time=0.05, window_title="NTE"):
-    """
-    [단일 키 백그라운드 입력]
-    ESC, Space, W/A/S/D 등 단일 단축키를 비점유로 입력합니다.
-    """
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
@@ -255,6 +289,7 @@ def press_game_key(key_name, press_time=0.05, window_title="NTE"):
         return False, f"키 입력 메시지 주입 실패: {str(e)}"
     
 def press_game_key_down(key_name, window_title="NTE"):
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
@@ -271,10 +306,7 @@ def press_game_key_down(key_name, window_title="NTE"):
         return False, f"키 입력 메시지 주입 실패: {str(e)}"
 
 def press_game_key_up(key_name, window_title="NTE"):
-    """
-    [단일 키 백그라운드 입력]
-    ESC, Space, W/A/S/D 등 단일 단축키를 비점유로 입력합니다.
-    """
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
@@ -291,6 +323,7 @@ def press_game_key_up(key_name, window_title="NTE"):
         return False, f"키 입력 메시지 주입 실패: {str(e)}"
 
 def type_game_string(text, window_title="NTE"):
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
@@ -304,6 +337,7 @@ def type_game_string(text, window_title="NTE"):
         return False, f"문자열 주입 실패: {str(e)}"
     
 def scroll_game_window(x, y, direction="down", clicks=1, window_title="NTE"):
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -323,64 +357,36 @@ def scroll_game_window(x, y, direction="down", clicks=1, window_title="NTE"):
         return False, f"휠 스크롤 메시지 주입 실패: {str(e)}"
     
 def find_image_in_cropped_zone(template_path, x1, y1, x2, y2, threshold=0.8):
+    # 1. 메모리로 화면 캡처
+    img_cropped = capture_with_mss(x1, y1, x2, y2)
+    if img_cropped is None or img_cropped.size == 0:
+        return None, "화면 캡처 실패"
 
-    images_dir = os.path.join(os.getcwd(), "images")
-    screenshot_path = os.path.join(images_dir, "screenshot.png")
-
-    if not os.path.exists(screenshot_path):
-        return None, f"원본 스크린샷을 찾을 수 없습니다: {screenshot_path}"
-
-    try:
-        img_array = np.fromfile(screenshot_path, np.uint8)
-        img_full = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-    except Exception as e:
-        return None, f"원본 스크린샷 읽기 실패 (바이너리 에러): {str(e)}"
-        
-    if img_full is None:
-        return None, "원본 스크린샷 디코딩 실패"
-
-    img_cropped = img_full[y1:y2, x1:x2]
-    if img_cropped.size == 0:
-        return None, "지정한 사각형 좌표 범위가 올바르지 않습니다. (크기가 0임)"
-
-    if not os.path.isabs(template_path):
-        if os.path.exists(os.path.join(os.getcwd(), template_path)):
-            template_path = os.path.join(os.getcwd(), template_path)
-        else:
-            template_path = os.path.join(images_dir, template_path)
-
-    if not os.path.exists(template_path):
-        return None, f"템플릿 이미지를 찾을 수 없습니다: {template_path}"
-
-    try:
-        template_array = np.fromfile(template_path, np.uint8)
-        template = cv2.imdecode(template_array, cv2.IMREAD_GRAYSCALE)
-    except Exception as e:
-        return None, f"템플릿 이미지 읽기 실패: {str(e)}"
-
+    # 2. ❌ 경로를 스스로 조작하던 구형 코드를 전부 지우고, imread_korean에 경로를 그대로 토스합니다.
+    template, err = imread_korean(template_path)
     if template is None:
-        return None, f"템플릿 이미지 디코딩 실패: {template_path}"
+        return None, f"템플릿 로드 실패: {err}"
 
     img_crop_gray = cv2.cvtColor(img_cropped, cv2.COLOR_BGR2GRAY)
-    w, h = template.shape[::-1]
+    gray_template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+    w, h = gray_template.shape[::-1]
 
-    res = cv2.matchTemplate(img_crop_gray, template, cv2.TM_CCOEFF_NORMED)
+    res = cv2.matchTemplate(img_crop_gray, gray_template, cv2.TM_CCOEFF_NORMED)
     _, max_val, _, max_loc = cv2.minMaxLoc(res)
 
     if max_val >= threshold:
         crop_center_x = max_loc[0] + int(w / 2)
         crop_center_y = max_loc[1] + int(h / 2)
-
         final_x = x1 + crop_center_x
         final_y = y1 + crop_center_y
-
-        print(f"[{template_path} 매칭 성공] 유사도: {max_val:.2f} | 최종 절대 좌표: ({final_x}, {final_y})")
+        print(f"[{template_path} 매칭 성공] 유사도: {max_val:.2f} | 좌표: ({final_x}, {final_y})")
         return (final_x, final_y), None
     else:
-        print(f"[{template_path} 매칭 실패] 최대 유사도: {max_val:.2f} (기준: {threshold})")
+        print(f"[{template_path} 매칭 실패] 최대 유사도: {max_val:.2f}")
         return None, "유사도 미달"
 
 def rotate_camera(dx, dy, window_title="NTE"):
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -403,7 +409,7 @@ def rotate_camera(dx, dy, window_title="NTE"):
     User32.SendInput(1, ctypes.byref(inp), ctypes.sizeof(INPUT))
 
 def capture_with_mss(x1, y1, x2, y2, window_title="NTE"):
-
+    active_window(window_title)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -426,38 +432,24 @@ def capture_with_mss(x1, y1, x2, y2, window_title="NTE"):
         
         return frame
 
-def imread_korean(file_path):
-    if not os.path.exists(file_path):
-        print(f"파일이 존재하지 않습니다: {file_path}")
-        return None, "파일 없음"
-    
-    with open(file_path, "rb") as f:
-        chunk = np.frombuffer(f.read(), np.uint8)
-        img = cv2.imdecode(chunk, cv2.IMREAD_COLOR) 
-    
-    if img is None:
-        return None, "디코딩 실패"
-    
-    return img, None
-
 def find_object_fast(template_path, x1, y1, x2, y2, threshold=0.8):
-
     img_cropped = capture_with_mss(x1, y1, x2, y2)
     gray_crop = cv2.cvtColor(img_cropped, cv2.COLOR_BGR2GRAY)
     
-
+    # ❌ 경로 중복 연산 없이 깔끔하게 호출
     template, _ = imread_korean(template_path)
-    if template is None: return None, "템플릿 로드 실패"
+    if template is None: 
+        return None, "템플릿 로드 실패"
+        
     gray_template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
     
-
     res = cv2.matchTemplate(gray_crop, gray_template, cv2.TM_CCOEFF_NORMED)
     _, max_val, _, max_loc = cv2.minMaxLoc(res)
 
     if max_val >= threshold:
         final_x = x1 + max_loc[0] + (gray_template.shape[1] // 2)
         final_y = y1 + max_loc[1] + (gray_template.shape[0] // 2)
-        print(f"[{template_path} 매칭 성공] 유사도: {max_val:.2f} | 최종 절대 좌표: ({final_x}, {final_y})")
+        print(f"[{template_path} 매칭 성공] 유사도: {max_val:.2f} | 좌표: ({final_x}, {final_y})")
         return (final_x, final_y), None
     else:
         print(f"[{template_path} 매칭 실패] 최대 유사도: {max_val:.2f}")

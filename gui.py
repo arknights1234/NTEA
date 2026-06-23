@@ -10,6 +10,7 @@ import win32api
 import win32con
 import win32gui
 import ctypes
+import version
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -584,9 +585,8 @@ class MainGUI(ctk.CTk):
         log_widget.configure(state="disabled")
 
     def setup_fourth_tab(self):
-        import updater
-        self.CURRENT_VERSION = "v1.0.0"
-        
+        self.CURRENT_VERSION = version.VERSION
+
         self.tab4.grid_columnconfigure(0, weight=1)
         self.tab4.grid_rowconfigure(0, weight=1)
 
@@ -634,29 +634,26 @@ class MainGUI(ctk.CTk):
         self.update_btn.configure(state="disabled", text="업데이트 다운로드 중...")
         self.status_lbl.configure(text="GitHub 자산을 다운로드하는 중입니다...", text_color="#ffffff")
         
-        # 화면 새로고침 강제 적용 (텍스트가 바로 바뀌도록)
         self.update_idletasks()
         
-        # 💡 쓰레드를 쓰지 않고 바로 다운로드 루틴 실행 (어차피 완료되면 os._exit로 꺼지므로)
         updater.download_and_install()
 
     def run_screenshot_test(self):
         self.status_lbl.configure(text="")
         
-        img_path, err_msg = core.capture_game_window("NTE")
+        img_obj, err_msg = core.capture_game_window("NTE")
         
         if err_msg:
             self.status_lbl.configure(text=err_msg, text_color="#ff4444")
         else:
             self.status_lbl.configure(text="캡처 성공! 뷰어를 엽니다.", text_color="#2e7d32")
-            self.open_screenshot_viewer(img_path)
+            self.open_screenshot_viewer(img_obj) 
 
-    def open_screenshot_viewer(self, img_path):
+    def open_screenshot_viewer(self, pil_img): 
         viewer = ctk.CTkToplevel(self)
         viewer.title("스크린샷 뷰어 (클릭하여 좌표 확인)")
         viewer.attributes("-topmost", True)
 
-        pil_img = Image.open(img_path)
         img_w, img_h = pil_img.size
         
         viewer.geometry(f"{img_w}x{img_h + 50}")

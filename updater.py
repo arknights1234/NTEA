@@ -68,8 +68,14 @@ def download_and_install():
             print("다운로드 완료. 교체 스크립트를 생성합니다.")
             
             # 2. 실행 중인 현재 파일 정보 확보
-            current_exe = sys.argv[0]              # 현재 실행 중인 파일 경로
-            current_filename = os.path.basename(current_exe) # 현재 파일 이름
+            if getattr(sys, 'frozen', False):
+                # PyInstaller로 빌드된 .exe 환경일 때 진짜 .exe 경로를 가져옵니다.
+                current_exe = sys.executable 
+            else:
+                # 일반 .py 파일 실행 환경일 때
+                current_exe = sys.argv[0]
+
+            current_filename = os.path.basename(current_exe)
             
             # 3. 자체 덮어쓰기용 Windows 배치 파일(.bat) 생성
             # 프로그램이 켜져 있으면 exe 파일이 잠겨서 안 바뀌므로, 종료 후 바꿀 bat 파일이 필요합니다.

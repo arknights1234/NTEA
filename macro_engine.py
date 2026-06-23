@@ -84,10 +84,8 @@ class MacroEngine:
     def run_cafe_earning(self, stop_event, log_func):
         """별미 카페 수익 받기 매크로 로직"""
         if stop_event.wait(1.0): return
-        core.active_window()
         for i in range(3):
             if stop_event.wait(1.0): return
-            core.capture_game_window()
             coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/도시타이쿤.png", 
                                                             x1=1600, y1=400, x2=1730, y2=555, 
                                                             threshold=0.8)
@@ -101,7 +99,6 @@ class MacroEngine:
         if stop_event.wait(0.5): return
         for i in range(3):
             if stop_event.wait(1.0): return
-            core.capture_game_window()
             coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/별미카페.png", 
                                                           x1=720, y1=625, x2=880, y2=780, 
                                                           threshold=0.8)
@@ -116,7 +113,6 @@ class MacroEngine:
             
         for i in range(3):
             if stop_event.wait(1.0): return
-            core.capture_game_window()
             coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익인출.png", 
                                                           x1=290, y1=900, x2=430, y2=980, 
                                                           threshold=0.8)
@@ -131,7 +127,6 @@ class MacroEngine:
         
         for i in range(3):
             if stop_event.wait(1.0): return
-            core.capture_game_window()
             coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익확인.png", 
                                                           x1=916, y1=874, x2=1009, y2=956, 
                                                           threshold=0.8)
@@ -146,7 +141,6 @@ class MacroEngine:
             
         for i in range(3):
             if stop_event.wait(1.0): return
-            core.capture_game_window()
             coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/터치해.png", 
                                                           x1=936, y1=936, x2=1020, y2=974, 
                                                           threshold=0.8)
@@ -175,17 +169,14 @@ class MacroEngine:
         is_sell = settings.get("sell", False)
         
         if stop_event.wait(1.0): return
-        core.active_window()
         fc = 0
         while(1):
             if stop_event.wait(1.0): return
-            core.active_window()
 
             if fc != 0 and fc % 10 == 0 and is_sell:
                 core.press_game_key("q")
                 if stop_event.wait(1.0): return
 
-                core.capture_game_window()
                 coords, err = core.find_image_in_cropped_zone(template_path="images/낚시/신선저장고.png", 
                                                             x1=114, y1=381, x2=175, y2=440, 
                                                             threshold=0.8)
@@ -195,7 +186,6 @@ class MacroEngine:
                     core.click_game_window2(x, y)
                     if stop_event.wait(1.0): return
 
-                core.capture_game_window()
                 coords2, err = core.find_image_in_cropped_zone(template_path="images/낚시/일괄판매.png", 
                                                             x1=1012, y1=950, x2=1115, y2=984, 
                                                             threshold=0.8)
@@ -205,7 +195,6 @@ class MacroEngine:
                     core.click_game_window2(x, y)
                     if stop_event.wait(1.0): return
                 
-                core.capture_game_window()
                 coords3, err = core.find_image_in_cropped_zone(template_path="images/낚시/판매확인.png", 
                                                             x1=1140, y1=689, x2=1200, y2=723, 
                                                             threshold=0.8)
@@ -218,7 +207,6 @@ class MacroEngine:
 
                 log_func("어획물 일괄 판매")
 
-                core.capture_game_window()
                 coords4, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
                                                             x1=934, y1=937, x2=1020, y2=974, 
                                                             threshold=0.8)
@@ -236,7 +224,6 @@ class MacroEngine:
             
             for i in range(5):
                 if stop_event.wait(0.2): return
-                core.capture_game_window()
                 coords3, err = core.find_image_in_cropped_zone(template_path="images/낚시/장착.png", 
                                                             x1=819, y1=522, x2=880, y2=555, 
                                                             threshold=0.8)
@@ -245,7 +232,6 @@ class MacroEngine:
                             if stop_event.wait(1.0): return
                             core.press_game_key("r")
                             if stop_event.wait(1.0): return
-                            core.capture_game_window()
                             coords4, err = core.find_image_in_cropped_zone(template_path="images/낚시/만능미끼.png", 
                                                                         x1=46, y1=118, x2=663, y2=609, 
                                                                         threshold=0.9)
@@ -285,7 +271,6 @@ class MacroEngine:
                                 core.press_game_key("e")
 
                             if stop_event.wait(1.0): return
-                            core.capture_game_window()
                             coords9, err = core.find_image_in_cropped_zone(template_path="images/낚시/교체.png", 
                                                                         x1=1140, y1=688, x2=1200, y2=727, 
                                                                         threshold=0.8)
@@ -300,7 +285,6 @@ class MacroEngine:
 
             for i in range(30):
                 if stop_event.wait(0.2): return
-                core.capture_game_window()
                 coords10, err = core.find_image_in_cropped_zone(template_path="images/낚시/입질.png", 
                                                             x1=654, y1=243, x2=714, y2=280, 
                                                             threshold=0.8)
@@ -333,7 +317,6 @@ class MacroEngine:
                     else:
                         core.press_game_key("d",press_time=pt)
                 else:
-                    core.capture_game_window()
                     if stop_event.wait(1.0): return
                     coords, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
                                                                 x1=940, y1=961, x2=1020, y2=993, 
@@ -362,11 +345,9 @@ class MacroEngine:
         is_time = settings.get("time", True)
 
         if stop_event.wait(1.0): return
-        core.active_window()
         while(1):
             while(1):
                 if stop_event.wait(1.0): return
-                core.capture_game_window()
                 coords, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/이벤트.png", 
                                                                 x1=1521, y1=437, x2=1583, y2=490, 
                                                                 threshold=0.8)
@@ -379,7 +360,6 @@ class MacroEngine:
 
 
             if stop_event.wait(3.0): return
-            core.capture_game_window()
             coords2, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/기간제.png", 
                                                             x1=204, y1=880, x2=246, y2=930, 
                                                             threshold=0.8)
@@ -390,7 +370,6 @@ class MacroEngine:
 
 
             if stop_event.wait(1.0): return
-            core.capture_game_window()
             coords3, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/무법레이싱.png", 
                                                             x1=103, y1=618, x2=239, y2=652, 
                                                             threshold=0.8)
@@ -401,7 +380,6 @@ class MacroEngine:
 
 
             if stop_event.wait(1.0): return
-            core.capture_game_window()
             coords4, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/레이스시작.png", 
                                                             x1=1620, y1=995, x2=1765, y2=1040, 
                                                             threshold=0.8)
@@ -419,7 +397,6 @@ class MacroEngine:
                 timer = 120
             while(1):
                 if stop_event.wait(10.0): return
-                core.capture_game_window()
                 coords5, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/결과.png", 
                                                                 x1=909, y1=26, x2=1016, y2=85, 
                                                                 threshold=0.8)
@@ -439,7 +416,6 @@ class MacroEngine:
                     if stop_event.wait(1.0): return
                     core.press_game_key("esc")
                     if stop_event.wait(2.0): return
-                    core.capture_game_window()
                     coords7, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/종료하기.png", 
                                                                 x1=1559, y1=559, x2=1716, y2=607, 
                                                                 threshold=0.8)
@@ -457,7 +433,7 @@ class MacroEngine:
         delay = float(config.get("nanally_superjump_setting", {}).get("delay", 0.00))
 
         if stop_event.wait(0.01): return
-        core.active_window()
+
         if stop_event.wait(0.1): return
         core.click_game_active_window()
         if stop_event.wait(0.3): return

@@ -2,8 +2,10 @@
 /Lib
 /Scripts
 pyvenv.cfg
-/images/test
-/images/screenshot.png
+/images
 config.json
 test.py
 __pycache__
+/build
+/dist
+ntea.spec
