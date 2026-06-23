@@ -2,7 +2,8 @@
 /Lib
 /Scripts
 pyvenv.cfg
-/images
+/images/test
+/images/icon.ico
 config.json
 test.py
 __pycache__
