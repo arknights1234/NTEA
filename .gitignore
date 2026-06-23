@@ -1,0 +1,8 @@
+/include
+/Lib
+/Scripts
+pyvenv.cfg
+/images/test
+/images/screenshot.png
+config.json
+test.py
