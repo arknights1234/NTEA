@@ -632,7 +632,7 @@ class MainGUI(ctk.CTk):
     def start_update(self):
         import updater
         self.update_btn.configure(state="disabled", text="업데이트 다운로드 중...")
-        self.status_lbl.configure(text="GitHub 자산을 다운로드하는 중입니다...", text_color="#ffffff")
+        self.status_lbl.configure(text="GitHub에서 다운로드하는 중입니다...", text_color="#ffffff")
         
         self.update_idletasks()
         
