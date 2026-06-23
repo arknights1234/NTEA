@@ -1,7 +1,7 @@
 import os
 import json
 
-CONFIG_FILE = "config.json"
+CONFIG_FILE = "NTEA_config.json"
 
 # 초기 기본값 설정
 DEFAULT_CONFIG = {

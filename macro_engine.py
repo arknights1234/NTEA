@@ -95,7 +95,8 @@ class MacroEngine:
                 core.click_game_window2(x, y)
                 break
             else: core.press_game_key("esc")
-
+            if i == 2:
+                return
         if stop_event.wait(0.5): return
         for i in range(3):
             if stop_event.wait(1.0): return
@@ -175,48 +176,61 @@ class MacroEngine:
 
             if fc != 0 and fc % 10 == 0 and is_sell:
                 core.press_game_key("q")
-                if stop_event.wait(1.0): return
-
-                coords, err = core.find_image_in_cropped_zone(template_path="images/낚시/신선저장고.png", 
-                                                            x1=114, y1=381, x2=175, y2=440, 
-                                                            threshold=0.8)
-                if coords:
-                    x, y = coords
+                for i in range(3):
                     if stop_event.wait(1.0): return
-                    core.click_game_window2(x, y)
+                    coords, err = core.find_image_in_cropped_zone(template_path="images/낚시/신선저장고.png", 
+                                                                x1=114, y1=381, x2=175, y2=440, 
+                                                                threshold=0.8)
+                    if coords:
+                        x, y = coords
+                        if stop_event.wait(1.0): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 2:
+                        return
+                for i in range(3):
                     if stop_event.wait(1.0): return
-
-                coords2, err = core.find_image_in_cropped_zone(template_path="images/낚시/일괄판매.png", 
-                                                            x1=1012, y1=950, x2=1115, y2=984, 
-                                                            threshold=0.8)
-                if coords2:
-                    x, y = coords2
-                    if stop_event.wait(1.0): return
-                    core.click_game_window2(x, y)
-                    if stop_event.wait(1.0): return
+                    coords2, err = core.find_image_in_cropped_zone(template_path="images/낚시/일괄판매.png", 
+                                                                x1=1012, y1=950, x2=1115, y2=984, 
+                                                                threshold=0.8)
+                    if coords2:
+                        x, y = coords2
+                        if stop_event.wait(1.0): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 2:
+                        return
                 
-                coords3, err = core.find_image_in_cropped_zone(template_path="images/낚시/판매확인.png", 
-                                                            x1=1140, y1=689, x2=1200, y2=723, 
-                                                            threshold=0.8)
-
-                if coords3:
-                    x, y = coords3
+                for i in range(3):
                     if stop_event.wait(1.0): return
-                    core.click_game_window2(x, y)
-                    if stop_event.wait(1.0): return
+                    coords3, err = core.find_image_in_cropped_zone(template_path="images/낚시/판매확인.png", 
+                                                                x1=1140, y1=689, x2=1200, y2=723, 
+                                                                threshold=0.8)
+                    if coords3:
+                        x, y = coords3
+                        if stop_event.wait(1.0): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 2:
+                        return
 
                 log_func("어획물 일괄 판매")
 
-                coords4, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
-                                                            x1=934, y1=937, x2=1020, y2=974, 
-                                                            threshold=0.8)
-                if coords4:
-                    x, y = coords4
+                for i in range(3):
                     if stop_event.wait(1.0): return
-                    core.click_game_window2(x, y)
-                    if stop_event.wait(1.0): return
-                    core.press_game_key("esc")
-                    if stop_event.wait(1.0): return
+                    coords4, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
+                                                                x1=934, y1=937, x2=1020, y2=974, 
+                                                                threshold=0.8)
+                    if coords4:
+                        x, y = coords4
+                        if stop_event.wait(1.0): return
+                        core.click_game_window2(x, y)
+                        if stop_event.wait(1.0): return
+                        core.press_game_key("esc")
+                        if stop_event.wait(1.0): return
+                        break
+                    if i == 2:
+                        return
 
             fc = fc + 1
 
@@ -231,59 +245,75 @@ class MacroEngine:
                         if is_bait:
                             if stop_event.wait(1.0): return
                             core.press_game_key("r")
-                            if stop_event.wait(1.0): return
-                            coords4, err = core.find_image_in_cropped_zone(template_path="images/낚시/만능미끼.png", 
-                                                                        x1=46, y1=118, x2=663, y2=609, 
-                                                                        threshold=0.9)
-                            if coords4:
-                                x, y = coords4
+                            for i in range(3):
                                 if stop_event.wait(1.0): return
-                                core.click_game_window2(x, y)
+                                coords4, err = core.find_image_in_cropped_zone(template_path="images/낚시/만능미끼.png", 
+                                                                            x1=46, y1=118, x2=663, y2=609, 
+                                                                            threshold=0.9)
+                                if coords4:
+                                    x, y = coords4
+                                    if stop_event.wait(1.0): return
+                                    core.click_game_window2(x, y)
+                                    break
+                                if i == 2:
+                                    return
 
-                            if stop_event.wait(1.0): return    
-                            coords5, err = core.find_image_in_cropped_zone(template_path="images/낚시/플러스.png", 
-                                                                        x1=1755, y1=931, x2=1790, y2=970, 
-                                                                        threshold=0.8)
-                            if coords5:
-                                x, y = coords5
-                                for i in range(9):
+                            for i in range(3):
+                                if stop_event.wait(1.0): return    
+                                coords5, err = core.find_image_in_cropped_zone(template_path="images/낚시/플러스.png", 
+                                                                            x1=1755, y1=931, x2=1790, y2=970, 
+                                                                            threshold=0.8)
+                                if coords5:
+                                    x, y = coords5
+                                    for i in range(9):
+                                        if stop_event.wait(0.1): return
+                                        core.click_game_window2(x, y)
+                                    break
+                                if i == 2:
+                                    return
+
+                            for i in range(3):
+                                if stop_event.wait(1.0): return
+                                coords6, err = core.find_image_in_cropped_zone(template_path="images/낚시/구매.png", 
+                                                                            x1=1576, y1=1004, x2=1649, y2=1060, 
+                                                                            threshold=0.8)
+                                if coords6:
+                                    x, y = coords6
                                     if stop_event.wait(0.1): return
                                     core.click_game_window2(x, y)
+                                    
+                                    log_func("미끼 구매")
 
-                            if stop_event.wait(1.0): return
-                            coords6, err = core.find_image_in_cropped_zone(template_path="images/낚시/구매.png", 
-                                                                        x1=1576, y1=1004, x2=1649, y2=1060, 
-                                                                        threshold=0.8)
-                            if coords6:
-                                x, y = coords6
-                                if stop_event.wait(0.1): return
-                                core.click_game_window2(x, y)
-                                
-                                log_func("미끼 구매")
+                                    if stop_event.wait(3.0): return
+                                    core.press_game_key("esc")
+                                    
+                                    if stop_event.wait(3.0): return
+                                    core.press_game_key("esc")
 
-                                if stop_event.wait(3.0): return
-                                core.press_game_key("esc")
-                                
-                                if stop_event.wait(3.0): return
-                                core.press_game_key("esc")
+                                    if stop_event.wait(1.0): return
+                                    core.press_game_key("e")
+                                    break
+                                if i == 2:
+                                    return
 
+                            for i in range(3):
                                 if stop_event.wait(1.0): return
-                                core.press_game_key("e")
-
-                            if stop_event.wait(1.0): return
-                            coords9, err = core.find_image_in_cropped_zone(template_path="images/낚시/교체.png", 
-                                                                        x1=1140, y1=688, x2=1200, y2=727, 
-                                                                        threshold=0.8)
-                            if coords9:
-                                x, y = coords9
-                                if stop_event.wait(0.1): return
-                                core.click_game_window2(x, y)
+                                coords9, err = core.find_image_in_cropped_zone(template_path="images/낚시/교체.png", 
+                                                                            x1=1140, y1=688, x2=1200, y2=727, 
+                                                                            threshold=0.8)
+                                if coords9:
+                                    x, y = coords9
+                                    if stop_event.wait(0.1): return
+                                    core.click_game_window2(x, y)
+                                    break
+                                if i == 2:
+                                    return
                             if stop_event.wait(1.0): return
                             core.press_game_key("f")
                             break
                         else: return
 
-            for i in range(30):
+            for i in range(50):
                 if stop_event.wait(0.2): return
                 coords10, err = core.find_image_in_cropped_zone(template_path="images/낚시/입질.png", 
                                                             x1=654, y1=243, x2=714, y2=280, 
@@ -333,9 +363,7 @@ class MacroEngine:
                         c = c + 1
                         if c > 15:
                             break
-        
-        
-        
+
         log_func("낚시 종료")
 
     def run_event_racing(self, stop_event, log_func):
@@ -343,7 +371,7 @@ class MacroEngine:
         config = load_config()
         settings = config.get("event_racing_setting", {})
         is_time = settings.get("time", True)
-
+        erc=0
         if stop_event.wait(1.0): return
         while(1):
             while(1):
@@ -358,7 +386,6 @@ class MacroEngine:
                     break
                 else: core.press_game_key("esc")
 
-
             if stop_event.wait(3.0): return
             coords2, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/기간제.png", 
                                                             x1=204, y1=880, x2=246, y2=930, 
@@ -369,24 +396,33 @@ class MacroEngine:
                 core.click_game_window2(x, y)
 
 
-            if stop_event.wait(1.0): return
-            coords3, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/무법레이싱.png", 
-                                                            x1=103, y1=618, x2=239, y2=652, 
-                                                            threshold=0.8)
-            if coords3:
-                x, y = coords3
+            for i in range(3):
                 if stop_event.wait(1.0): return
-                core.click_game_window2(x, y)
+                coords3, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/무법레이싱.png", 
+                                                                x1=91, y1=211, x2=252, y2=850, 
+                                                                threshold=0.8)
+                if coords3:
+                    x, y = coords3
+                    if stop_event.wait(1.0): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 2:
+                    return
+                
 
 
-            if stop_event.wait(1.0): return
-            coords4, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/레이스시작.png", 
-                                                            x1=1620, y1=995, x2=1765, y2=1040, 
-                                                            threshold=0.8)
-            if coords4:
-                x, y = coords4
+            for i in range(3):
                 if stop_event.wait(1.0): return
-                core.click_game_window2(x, y)
+                coords4, err = core.find_image_in_cropped_zone(template_path="images/무법레이싱/레이스시작.png", 
+                                                                x1=1620, y1=995, x2=1765, y2=1040, 
+                                                                threshold=0.8)
+                if coords4:
+                    x, y = coords4
+                    if stop_event.wait(1.0): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 2:
+                    return
 
 
             if stop_event.wait(60.0): return
@@ -409,6 +445,8 @@ class MacroEngine:
                         x, y = coords6
                         if stop_event.wait(1.0): return
                         core.click_game_window2(x, y)
+                        erc = erc + 1
+                        log_func(f"무법 레이싱 {erc}번 완료")
                         break
                 timer = timer + 10
                 if timer >= 600:
