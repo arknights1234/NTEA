@@ -16,28 +16,65 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
 class HotkeyManager:
-    def __init__(self, callback):
-        self.callback = callback
+    def __init__(self, start_callback, stop_callback=None):
+        self.start_callback = start_callback
+        self.stop_callback = stop_callback
         self.mouse_listener = None
-        self.keyboard_listener = None
+        self.keyboard_hook_ref = None
+        self.is_active = False
 
     def start(self, target_key):
-        self.keyboard_listener = keyboard.GlobalHotKeys({
-            target_key: self.callback
-        })
-        self.keyboard_listener.start()
+        tk_lower = str(target_key).lower()
+        pure_key = tk_lower.replace("mouse_", "")
+        mouse_buttons = ["left", "right", "middle", "x1", "x2", "button4", "button5"]
 
-        def on_click(x, y, button, pressed):
-            if pressed:
-                if str(button) == target_key:
-                    self.callback()
+        if "mouse_" not in tk_lower and tk_lower not in mouse_buttons:
+            def on_key_event(e):
+                if e.name.lower() == tk_lower:
+                    if e.event_type == keyboard.KEY_DOWN:
+                        if not self.is_active:
+                            self.is_active = True
+                            self.start_callback()
+                    elif e.event_type == keyboard.KEY_UP:
+                        self.is_active = False
+                        if self.stop_callback:
+                            self.stop_callback()
 
-        self.mouse_listener = mouse.Listener(on_click=on_click)
-        self.mouse_listener.start()
+            self.keyboard_hook_ref = on_key_event
+            keyboard.hook(on_key_event)
+
+        else:
+            def on_click(x, y, button, pressed):
+                btn_str = str(button).lower()
+                btn_name = button.name.lower()
+                
+                if pure_key in btn_str or pure_key == btn_name:
+                    if pressed:
+                        if not self.is_active:
+                            self.is_active = True
+                            self.start_callback()
+                    else:
+                        self.is_active = False
+                        if self.stop_callback:
+                            self.stop_callback()
+
+            self.mouse_listener = mouse.Listener(on_click=on_click)
+            self.mouse_listener.start()
 
     def stop(self):
-        if self.keyboard_listener: self.keyboard_listener.stop()
-        if self.mouse_listener: self.mouse_listener.stop()
+        if self.keyboard_hook_ref:
+            try:
+                keyboard.unhook(self.keyboard_hook_ref)
+            except Exception:
+                pass
+        
+        if self.mouse_listener:
+            try:
+                self.mouse_listener.stop()
+            except Exception:
+                pass
+            
+        self.is_active = False
 
 class cafe_earning:
     def __init__(self):
@@ -74,6 +111,13 @@ class fishing:
         )
         self.chk_auto.pack(fill="x", padx=10, pady=10)
         self.chk_auto2.pack(fill="x", padx=10, pady=0)
+
+        usage_text = (
+            "낚시 시작을 눌러 감정사가 낚싯대를 든 상태에서 시작\n"
+            "만능 미끼 10개씩 자동 구매 가능\n"
+            "낚시 10회마다 일괄 판매 가능"
+        )
+        ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
 
     def save_settings_live(self):
         current_state = self.check_var.get()
@@ -212,6 +256,58 @@ class nanally_superjump:
         
         self.key_label.configure(text=f"현재 단축키: [{key}]", text_color="#2ecc71")
 
+class mouse_auto_click:
+    def __init__(self):
+        self.name = "마우스 광클"
+        self.task_key = "run_mouse_auto_click"
+        self.is_listening = False
+
+    def build_settings_ui(self, parent_frame):
+        config = load_config()
+        settings = config.get("mouse_auto_click_setting", {})
+        saved_key = settings.get("key", "caps lock")
+
+        self.key_label = ctk.CTkLabel(parent_frame, text=f"현재 단축키: [{saved_key}]", font=("맑은 고딕", 13))
+        self.key_label.pack(pady=(10, 5))
+        ctk.CTkButton(parent_frame, text="단축키 변경", command=self.start_listening).pack()
+        
+        usage_text = (
+            "단축키는 마우스 버튼도 가능\n"
+            "감옥 설거지용\n"
+            "매크로 실행 후 게임 화면에서 단축키를 꾹 눌러서 사용"
+        )
+        ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
+
+    def start_listening(self):
+        self.is_listening = True
+        self.key_label.configure(text="키보드나 마우스 버튼을 누르세요...", text_color="#f1c40f")
+
+        def on_key(event):
+            if self.is_listening:
+                self.save_key(event.name)
+                self.is_listening = False
+                keyboard.unhook(on_key)
+        keyboard.hook(on_key)
+
+        def on_click(x, y, button, pressed):
+            if pressed and self.is_listening:
+                self.save_key(f"mouse_{button.name}") 
+                self.is_listening = False
+                m_listener.stop()
+                keyboard.unhook(on_key)
+
+        m_listener = mouse.Listener(on_click=on_click)
+        m_listener.start()
+
+    def save_key(self, key):
+        config = load_config()
+        if "mouse_auto_click_setting" not in config:
+            config["mouse_auto_click_setting"] = {}
+        config["mouse_auto_click_setting"]["key"] = key
+        save_config(config)
+        
+        self.key_label.configure(text=f"현재 단축키: [{key}]", text_color="#2ecc71")
+
 WNDPROC = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_uint, ctypes.c_int, ctypes.c_int)
 GWL_WNDPROC = -4
 
@@ -295,12 +391,13 @@ class MainGUI(ctk.CTk):
 
         self.checkbox_vars = {}
 
-        self.active_hotkeys = []
         self.active_listeners = []
         
 
         self.tab1_tasks = [cafe_earning()]
-        self.tab2_tasks = [fishing(),nanally_superjump()]
+        self.tab2_tasks = [fishing(),
+                           nanally_superjump(),
+                           mouse_auto_click()]
         self.tab3_tasks = [event_racing()]
 
         self.running_tabs = set()
@@ -327,7 +424,6 @@ class MainGUI(ctk.CTk):
         self.overlay = None
 
     def trigger_stop_by_hotkey(self):
-        
         if not self.running_tabs:
             return
         
@@ -456,19 +552,6 @@ class MainGUI(ctk.CTk):
 
         self.update_tab_lock_state()
          
-    def register_hotkey(self, key_name, callback):
-        if key_name.startswith("mouse_"):
-            btn_name = key_name.replace("mouse_", "")
-            def on_click(x, y, button, pressed):
-                if pressed and str(button.name) == btn_name:
-                    callback()
-            
-            m_listener = mouse.Listener(on_click=on_click)
-            m_listener.start()
-            self.active_listeners.append(m_listener)
-        else:
-            hotkey_obj = keyboard.add_hotkey(key_name, callback)
-            self.active_hotkeys.append(hotkey_obj)
 
     def toggle_status(self, button, log_widget, tab_id, selectors, gear_buttons, setting_content, radio_var=None):
         
@@ -505,23 +588,29 @@ class MainGUI(ctk.CTk):
             for g in gear_buttons: g.configure(state="disabled")
             self.set_frame_widgets_state(setting_content, "disabled")
 
-            
+            is_hotkey_task_present = False
             for task in selected_tasks:
                 config = load_config()
+                
                 if task.task_key == "run_nanally_superjump":
                     key = config.get("nanally_superjump_setting", {}).get("key", "caps lock")
+                    is_hotkey_task_present = True
+                    manager = HotkeyManager(lambda t=task: self.engine.execute_task_by_hotkey(t, log_widget))
+                    manager.start(key)
+                    self.active_listeners.append(manager)
+                    
+                elif task.task_key == "run_mouse_auto_click":
+                    key = config.get("mouse_auto_click_setting", {}).get("key", "caps lock")
+                    is_hotkey_task_present = True
+                    manager = HotkeyManager(
+                        start_callback=lambda t=task: self.engine.execute_task_by_hotkey(t, log_widget),
+                        stop_callback=lambda: self.engine.stop_macro_by_hotkey(log_widget)
+                    )
+                    manager.start(key)
+                    self.active_listeners.append(manager)
 
-                    def on_trigger(t=task):
-                        self.engine.execute_task_by_hotkey(t, log_widget)
-                    
-                    hotkey_obj = self.register_hotkey(key, on_trigger)
-                    self.active_hotkeys.append(hotkey_obj)
-                    
-            
-            if not self.active_hotkeys:
-                self.engine.start_macro(
-                    selected_tasks, log_widget, tab_id, button, selectors, gear_buttons, setting_content
-                )
+            if not is_hotkey_task_present:
+                self.engine.start_macro(selected_tasks, log_widget, tab_id, button, selectors, gear_buttons, setting_content)
             
         else:
             button.configure(text="시작", fg_color="#1f538d", hover_color="#14375e")
@@ -535,14 +624,11 @@ class MainGUI(ctk.CTk):
             if self.overlay:
                 self.overlay.destroy()
                 self.overlay = None
-            
-            for hotkey_obj in self.active_hotkeys:
-                if hotkey_obj is not None:
-                    keyboard.remove_hotkey(hotkey_obj)
+
             for listener in self.active_listeners:
                 if listener is not None:
                     listener.stop()
-            self.active_hotkeys = []
+
             self.active_listeners = []
             self.engine.stop_macro()
             

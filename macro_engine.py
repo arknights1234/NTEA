@@ -13,22 +13,33 @@ class MacroEngine:
         self.cooldown_duration = 1.0
 
     def execute_task_by_hotkey(self, task, log_widget):
-        """[핵심] 단축키 입력 시 엔진 내부 함수를 즉시 호출"""
-        self.stop_event.clear()
+        def async_wrapper():
+            self.stop_event.clear()
 
-        current_time = time.time()
-        if current_time - self.last_execution_time < self.cooldown_duration:
-            return  
-        
-        self.last_execution_time = current_time
+            def log_messenger(msg):
+                tmsg = f"[{time.ctime().split()[3]}] " + msg
+                self.gui.append_log(log_widget, tmsg)
 
-        def log_messenger(msg):
-            tmsg = f"[{time.ctime().split()[3]}] " + msg
-            self.gui.append_log(log_widget, tmsg)
-        if hasattr(task, 'task_key'):
-            task_func = getattr(self, task.task_key, None)
-            if task_func:
-                task_func(self.stop_event, log_messenger)
+            if hasattr(task, 'task_key'):
+                task_func = getattr(self, task.task_key, None)
+                if task_func:
+                    if task.task_key == "mouse_auto_click":
+                        self.macro_thread = threading.Thread(
+                            target=task_func, args=(self.stop_event, log_messenger), daemon=True
+                        )
+                        self.macro_thread.start()
+                    else:
+                        current_time = time.time()
+                        if current_time - self.last_execution_time < self.cooldown_duration:
+                            return  
+                        self.last_execution_time = current_time
+                        task_func(self.stop_event, log_messenger)
+
+        launcher_thread = threading.Thread(target=async_wrapper, daemon=True)
+        launcher_thread.start()
+
+    def stop_macro_by_hotkey(self, log_widget):
+        self.stop_event.set()
 
     def start_macro(self, selected_tasks, log_widget, tab_id, button, selectors, gear_buttons, setting_content):
         self.stop_event.clear()
@@ -478,7 +489,14 @@ class MacroEngine:
         core.click_game_active_window()
         if stop_event.wait(0.3): return
         core.click_game_active_window()
-        if stop_event.wait(0.490 + delay): return
+        if stop_event.wait(0.485 + delay): return
         core.press_game_key("space")
 
         log_func("나나리 슈퍼 점프")
+
+    def run_mouse_auto_click(self, stop_event, log_func):
+        """마우스 광클 매크로 로직"""
+        log_func("마우스 광클")
+        while not stop_event.is_set():
+            if stop_event.wait(0.1): return
+            core.click_game_active_window()
