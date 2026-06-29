@@ -204,8 +204,8 @@ class nanally_superjump:
                       command=self.reset_delay).pack(side="left", padx=10)
 
         usage_text = (
-            "단축키는 마우스 버튼도 가능\n"
             "점프 타이밍 조절 가능 (기본값 0.00)\n"
+            "단축키는 마우스 버튼도 가능\n"
             "매크로 실행 후 게임 화면에서 단축키를 눌러서 사용"
         )
         ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
@@ -272,8 +272,8 @@ class mouse_auto_click:
         ctk.CTkButton(parent_frame, text="단축키 변경", command=self.start_listening).pack()
         
         usage_text = (
-            "단축키는 마우스 버튼도 가능\n"
             "감옥 설거지용\n"
+            "단축키는 마우스 버튼도 가능\n"
             "매크로 실행 후 게임 화면에서 단축키를 꾹 눌러서 사용"
         )
         ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
@@ -307,6 +307,19 @@ class mouse_auto_click:
         save_config(config)
         
         self.key_label.configure(text=f"현재 단축키: [{key}]", text_color="#2ecc71")
+
+class owners_selection:
+    def __init__(self):
+        self.name = "점장 특제"
+        self.task_key = "run_owners_selection"
+
+    def build_settings_ui(self, parent_frame):
+        usage_text = (
+            "점장 특제 스테이지 선택 화면에서 실행\n"
+            "1-1반복\n"
+            "보조 직원 라크리모사, 다포딜 사용 시 더 빠름"
+        )
+        ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
 
 WNDPROC = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_uint, ctypes.c_int, ctypes.c_int)
 GWL_WNDPROC = -4
@@ -396,6 +409,7 @@ class MainGUI(ctk.CTk):
 
         self.tab1_tasks = [cafe_earning()]
         self.tab2_tasks = [fishing(),
+                           owners_selection(),
                            nanally_superjump(),
                            mouse_auto_click()]
         self.tab3_tasks = [event_racing()]

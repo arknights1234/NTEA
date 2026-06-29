@@ -489,7 +489,7 @@ class MacroEngine:
         core.click_game_active_window()
         if stop_event.wait(0.3): return
         core.click_game_active_window()
-        if stop_event.wait(0.485 + delay): return
+        if stop_event.wait(0.445 + delay): return
         core.press_game_key("space")
 
         log_func("나나리 슈퍼 점프")
@@ -500,3 +500,208 @@ class MacroEngine:
         while not stop_event.is_set():
             if stop_event.wait(0.1): return
             core.click_game_active_window()
+
+    def run_owners_selection(self, stop_event, log_func):
+        """점장 특제 매크로 로직"""
+        if stop_event.wait(1.0): return
+        c = 0
+        for i in range(59):
+            core.scroll_game_window(x=172, y=556, direction="up", clicks=100)
+            for i in range(3):
+                if stop_event.wait(0.5): return
+                coords1, err = core.find_image_in_cropped_zone(template_path="images/점장특제/신제품시연.png", 
+                                                                x1=21, y1=338, x2=322, y2=451, 
+                                                                threshold=0.8)
+                if coords1:
+                    x, y = coords1
+                    if stop_event.wait(0.5): return
+                    core.click_game_window2(x, y)
+                    break
+                else: core.scroll_game_window(x=172, y=556, direction="up", clicks=100)
+                if i == 2:
+                    return
+            
+            for i in range(3):
+                if stop_event.wait(1.0): return
+                coords2, err = core.find_image_in_cropped_zone(template_path="images/점장특제/영업개시.png", 
+                                                                x1=1655, y1=984, x2=1781, y2=1040, 
+                                                                threshold=0.8)
+                if coords2:
+                    x, y = coords2
+                    if stop_event.wait(1.0): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 2:
+                    return
+            if stop_event.wait(3.0): return
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords3, err = core.find_image_in_cropped_zone(template_path="images/점장특제/1분.png", 
+                                                                x1=878, y1=57, x2=967, y2=99, 
+                                                                threshold=0.8)
+                if coords3:
+                    break
+                if i == 4:
+                    return
+
+            for i in range(15):
+                if stop_event.wait(0.2): return
+                coords4, err = core.find_image_in_cropped_zone(template_path="images/점장특제/크루아상준비.png", 
+                                                                x1=639, y1=909, x2=841, y2=1040, 
+                                                                threshold=0.8)
+                if coords4:
+                    x, y = coords4
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 15:
+                    return
+                
+            for i in range(15):
+                if stop_event.wait(0.2): return
+                coords5, err = core.find_image_in_cropped_zone(template_path="images/점장특제/케이크준비.png", 
+                                                                x1=878, y1=905, x2=1103, y2=1040, 
+                                                                threshold=0.8)
+                if coords5:
+                    x, y = coords5
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 14:
+                    return
+            if stop_event.wait(1.0): return
+            for i in range(15):
+                if stop_event.wait(0.2): return
+                coords6, err = core.find_image_in_cropped_zone(template_path="images/점장특제/식빵준비.png", 
+                                                                x1=20, y1=908, x2=248, y2=1040, 
+                                                                threshold=0.8)
+                if coords6:
+                    x, y = coords6
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 14:
+                    return
+            
+            r = 0
+            while(1):
+                if stop_event.wait(0.1): return
+                coords7, err = core.find_image_in_cropped_zone(template_path="images/점장특제/에그토마토크루아상.png", 
+                                                                x1=581, y1=124, x2=1414, y2=424, 
+                                                                threshold=0.8)
+                coords72, err = core.find_image_in_cropped_zone(template_path="images/점장특제/에그토마토크루아상2.png", 
+                                                                x1=581, y1=124, x2=1414, y2=424, 
+                                                                threshold=0.8)
+                if coords7 or coords72:
+                    coords8, err = core.find_image_in_cropped_zone(template_path="images/점장특제/크루아상.png", 
+                                                                x1=508, y1=736, x2=782, y2=869, 
+                                                                threshold=0.8)
+                    if coords8:
+                        x, y = coords8
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                    if stop_event.wait(0.2): return
+                    coords9, err = core.find_image_in_cropped_zone(template_path="images/점장특제/에그.png", 
+                                                                x1=361, y1=639, x2=451, y2=717, 
+                                                                threshold=0.8)
+                    if coords9:
+                        x, y = coords9
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        r = r + 1
+                    if stop_event.wait(1.0): return
+
+                coords10, err = core.find_image_in_cropped_zone(template_path="images/점장특제/애플파이.png", 
+                                                                x1=581, y1=124, x2=1414, y2=424,
+                                                                threshold=0.8)
+                if coords10:
+                    coords11, err = core.find_image_in_cropped_zone(template_path="images/점장특제/케이크.png", 
+                                                                x1=1142, y1=962, x2=1381, y2=1080, 
+                                                                threshold=0.8)
+                    if coords11:
+                        x, y = coords11
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                    if stop_event.wait(0.2): return
+                    coords12, err = core.find_image_in_cropped_zone(template_path="images/점장특제/애플.png", 
+                                                                x1=967, y1=594, x2=1119, y2=711, 
+                                                                threshold=0.8)
+                    if coords12:
+                        x, y = coords12
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        r = r + 1
+                    if stop_event.wait(1.0): return
+
+                coords13, err = core.find_image_in_cropped_zone(template_path="images/점장특제/참치샌드위치.png", 
+                                                                x1=581, y1=124, x2=1414, y2=424,
+                                                                threshold=0.8)
+                if coords13:
+                    coords14, err = core.find_image_in_cropped_zone(template_path="images/점장특제/식빵.png", 
+                                                                x1=3, y1=733, x2=246, y2=873, 
+                                                                threshold=0.8)
+                    if coords14:
+                        x, y = coords14
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        r = r + 1
+                    if stop_event.wait(0.2): return
+                    coords15, err = core.find_image_in_cropped_zone(template_path="images/점장특제/참치.png", 
+                                                                x1=194, y1=643, x2=277, y2=720, 
+                                                                threshold=0.8)
+                    if coords15:
+                        x, y = coords15
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                    if stop_event.wait(1.0): return
+
+                coords16, err = core.find_image_in_cropped_zone(template_path="images/점장특제/특제토마토주스.png", 
+                                                                x1=581, y1=124, x2=1414, y2=424,
+                                                                threshold=0.8)
+                coords162, err = core.find_image_in_cropped_zone(template_path="images/점장특제/특제토마토주스2.png", 
+                                                                x1=581, y1=124, x2=1414, y2=424,
+                                                                threshold=0.8)
+                if coords16 or coords162:
+                    coords17, err = core.find_image_in_cropped_zone(template_path="images/점장특제/컵.png", 
+                                                                x1=1688, y1=698, x2=1893, y2=888, 
+                                                                threshold=0.8)
+                    if coords17:
+                        x, y = coords17
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                    if stop_event.wait(0.2): return
+                    coords18, err = core.find_image_in_cropped_zone(template_path="images/점장특제/토마토주스.png", 
+                                                                x1=1634, y1=571, x2=1764, y2=697, 
+                                                                threshold=0.8)
+                    if coords18:
+                        x, y = coords18
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        r = r + 2
+                    if stop_event.wait(1.0): return
+                
+                if r >= 3:
+                    core.press_game_key("esc")
+                    break
+
+            for i in range(3):
+                if stop_event.wait(1.0): return
+                coords19, err = core.find_image_in_cropped_zone(template_path="images/점장특제/수령.png", 
+                                                                x1=1127, y1=818, x2=1191, y2=852, 
+                                                                threshold=0.8)
+                if coords19:
+                    x, y = coords19
+                    if stop_event.wait(1.0): return
+                    core.click_game_window2(x, y)
+                    c = c + 1
+                    log_func(f"점장 특제 {c}번 완료")
+                    break
+                if i == 2:
+                    return
+            for i in range(10):
+                if stop_event.wait(0.1): return
+                coords20, err = core.find_image_in_cropped_zone(template_path="images/점장특제/도시활력제.png", 
+                                                                x1=581, y1=519, x2=744, y2=559, 
+                                                                threshold=0.8)
+                if coords20:
+                    return

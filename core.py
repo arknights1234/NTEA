@@ -76,36 +76,25 @@ class BITMAPINFO(ctypes.Structure):
     _fields_ = [('bmiHeader', BITMAPINFOHEADER), ('bmiColors', wintypes.DWORD * 3)]
 
 def resource_path(relative_path):
-    """ PyInstaller 단일 파일 환경에서 이미지 등 자산의 실제 경로를 반환합니다 """
     try:
-        # PyInstaller가 압축을 푸는 임시 폴더 경로 (_MEIPASS)
         base_path = sys._MEIPASS
     except Exception:
-        # 일반 .py 실행 환경일 때의 현재 폴더 경로
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
 
 def imread_korean(file_path):
-    """ 일반 실행과 .exe 단일 파일 환경을 모두 지원하는 한국어 경로 이미지 로더 """
-    # 1. 사용자가 넘긴 원본 경로를 보관 (예: "images/별미카페/도시타이쿤.png")
     clean_path = os.path.normpath(file_path)
-    
-    # 2. 만약 절대경로로 들어왔다면, 내장 자산으로 처리하기 위해 앞부분을 날리고 상대경로화 시도
-    # (일반 파이썬 실행 시 os.path.isabs가 걸리는 경우 방지)
+
     if os.path.isabs(clean_path):
-        # 현재 작업 디렉토리 기준 상대경로로 역변환
         try:
             clean_path = os.path.relpath(clean_path, os.getcwd())
         except Exception:
             pass
 
-    # 3. [핵심] PyInstaller 임시 폴더 내에서 상대경로로 먼저 찾기
     real_path = resource_path(clean_path)
 
-    # 4. 만약 임시 폴더에 없다면 (일반 개발 환경이거나 exe 밖에 두고 쓰는 폴더일 때)
     if not os.path.exists(real_path):
-        # 원래 실행 파일이 위치한 실제 하드디스크 경로에서 찾기
         real_path = os.path.normpath(os.path.join(os.getcwd(), clean_path))
 
     # 5. 최종 검증 후 이미지 로드
@@ -207,12 +196,12 @@ def click_game_window2(x, y, window_title="NTE"):
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
     
     if User32.IsIconic(target_hwnd):
-        User32.ShowWindow(target_hwnd, 9) # 최소화 해제
+        User32.ShowWindow(target_hwnd, 9)
     else:
-        User32.ShowWindow(target_hwnd, 5) # 창 표시
+        User32.ShowWindow(target_hwnd, 5)
         
-    User32.SetForegroundWindow(target_hwnd) # 맨 앞으로 가져오기
-    User32.SetActiveWindow(target_hwnd)     # 활성화 잠금
+    User32.SetForegroundWindow(target_hwnd)
+    User32.SetActiveWindow(target_hwnd)
     
     time.sleep(0.1)
 
@@ -261,12 +250,12 @@ def active_window(window_title="NTE"):
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
     
     if User32.IsIconic(target_hwnd):
-        User32.ShowWindow(target_hwnd, 9) # 최소화 해제
+        User32.ShowWindow(target_hwnd, 9)
     else:
-        User32.ShowWindow(target_hwnd, 5) # 창 표시
+        User32.ShowWindow(target_hwnd, 5)
         
-    User32.SetForegroundWindow(target_hwnd) # 맨 앞으로 가져오기
-    User32.SetActiveWindow(target_hwnd)     # 활성화 잠금
+    User32.SetForegroundWindow(target_hwnd)
+    User32.SetActiveWindow(target_hwnd)
     time.sleep(0.05)
 
 def press_game_key(key_name, press_time=0.05, window_title="NTE"):
@@ -357,12 +346,10 @@ def scroll_game_window(x, y, direction="down", clicks=1, window_title="NTE"):
         return False, f"휠 스크롤 메시지 주입 실패: {str(e)}"
     
 def find_image_in_cropped_zone(template_path, x1, y1, x2, y2, threshold=0.8):
-    # 1. 메모리로 화면 캡처
     img_cropped = capture_with_mss(x1, y1, x2, y2)
     if img_cropped is None or img_cropped.size == 0:
         return None, "화면 캡처 실패"
 
-    # 2. ❌ 경로를 스스로 조작하던 구형 코드를 전부 지우고, imread_korean에 경로를 그대로 토스합니다.
     template, err = imread_korean(template_path)
     if template is None:
         return None, f"템플릿 로드 실패: {err}"
@@ -393,12 +380,12 @@ def rotate_camera(dx, dy, window_title="NTE"):
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
     
     if User32.IsIconic(target_hwnd):
-        User32.ShowWindow(target_hwnd, 9) # 최소화 해제
+        User32.ShowWindow(target_hwnd, 9)
     else:
-        User32.ShowWindow(target_hwnd, 5) # 창 표시
+        User32.ShowWindow(target_hwnd, 5)
         
-    User32.SetForegroundWindow(target_hwnd) # 맨 앞으로 가져오기
-    User32.SetActiveWindow(target_hwnd)     # 활성화 잠금
+    User32.SetForegroundWindow(target_hwnd)
+    User32.SetActiveWindow(target_hwnd)
     
     time.sleep(0.1)
 
@@ -436,7 +423,6 @@ def find_object_fast(template_path, x1, y1, x2, y2, threshold=0.8):
     img_cropped = capture_with_mss(x1, y1, x2, y2)
     gray_crop = cv2.cvtColor(img_cropped, cv2.COLOR_BGR2GRAY)
     
-    # ❌ 경로 중복 연산 없이 깔끔하게 호출
     template, _ = imread_korean(template_path)
     if template is None: 
         return None, "템플릿 로드 실패"
