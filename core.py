@@ -402,15 +402,16 @@ def capture_with_mss(x1, y1, x2, y2, window_title="NTE"):
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
 
-    rect = wintypes.RECT()
-    User32.GetWindowRect(target_hwnd, ctypes.byref(rect))
-    
+    point = wintypes.POINT(0, 0)
+    User32.ClientToScreen(target_hwnd, ctypes.byref(point))
+
     monitor_rect = {
-        "top": rect.top + y1,
-        "left": rect.left + x1,
+        "top": point.y + y1,
+        "left": point.x + x1,
         "width": x2 - x1,
         "height": y2 - y1
     }
+
     with mss.MSS() as sct:
         img = sct.grab(monitor_rect)
         

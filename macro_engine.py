@@ -111,11 +111,11 @@ class MacroEngine:
         if stop_event.wait(0.5): return
         for i in range(3):
             if stop_event.wait(1.0): return
-            coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/별미카페.png", 
+            coords2, err = core.find_image_in_cropped_zone(template_path="images/별미카페/별미카페.png", 
                                                           x1=720, y1=625, x2=880, y2=780, 
                                                           threshold=0.8)
-            if coords:
-                x, y = coords
+            if coords2:
+                x, y = coords2
                 if stop_event.wait(1.0): return
                 core.click_game_window2(x, y)
                 break
@@ -125,11 +125,11 @@ class MacroEngine:
             
         for i in range(3):
             if stop_event.wait(1.0): return
-            coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익인출.png", 
+            coords3, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익인출.png", 
                                                           x1=290, y1=900, x2=430, y2=980, 
                                                           threshold=0.8)
-            if coords:
-                x, y = coords
+            if coords3:
+                x, y = coords3
                 if stop_event.wait(1.0): return
                 core.click_game_window2(x, y)
                 break
@@ -137,13 +137,31 @@ class MacroEngine:
             if i == 2:
                 return
         
+        for i in range(10):
+            if stop_event.wait(0.1): return
+            coords4, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익없음.png", 
+                                                          x1=739, y1=513, x2=846, y2=564, 
+                                                          threshold=0.8)
+            
+            coords5, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익정산.png", 
+                                                          x1=635, y1=510, x2=788, y2=571, 
+                                                          threshold=0.8)
+            
+            if coords4 or coords5:
+                if stop_event.wait(1.0): return
+                core.press_game_key("esc")
+                
+                if stop_event.wait(1.0): return
+                core.press_game_key("esc")
+                break
+        
         for i in range(3):
             if stop_event.wait(1.0): return
-            coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익확인.png", 
+            coords6, err = core.find_image_in_cropped_zone(template_path="images/별미카페/수익확인.png", 
                                                           x1=916, y1=874, x2=1009, y2=956, 
                                                           threshold=0.8)
-            if coords:
-                x, y = coords
+            if coords6:
+                x, y = coords6
                 if stop_event.wait(1.0): return
                 core.click_game_window2(x, y)
                 break
@@ -153,11 +171,11 @@ class MacroEngine:
             
         for i in range(3):
             if stop_event.wait(1.0): return
-            coords, err = core.find_image_in_cropped_zone(template_path="images/별미카페/터치해.png", 
+            coords7, err = core.find_image_in_cropped_zone(template_path="images/별미카페/터치해.png", 
                                                           x1=936, y1=936, x2=1020, y2=974, 
                                                           threshold=0.8)
-            if coords:
-                x, y = coords
+            if coords7:
+                x, y = coords7
                 if stop_event.wait(1.0): return
                 core.click_game_window2(x, y)
                 break
@@ -179,7 +197,9 @@ class MacroEngine:
         settings = config.get("fishing_settings", {})
         is_bait = settings.get("bait", False)
         is_sell = settings.get("sell", False)
-        
+        max_count = int(settings.get("max_count", 100))
+        if not max_count or max_count == 0:
+            return
         if stop_event.wait(1.0): return
         fc = 0
         while(1):
@@ -335,7 +355,7 @@ class MacroEngine:
                         break
             c = 0
             while(1):
-                if stop_event.wait(0.01): return
+                if stop_event.wait(0.0001): return
                 coords1, err = core.find_object_fast(template_path="images/낚시/낚시1.png", 
                                                             x1=608, y1=60, x2=1321, y2=88, 
                                                             threshold=0.5)
@@ -346,28 +366,29 @@ class MacroEngine:
                 if coords1 and coords2:
                     x1, y1 = coords1
                     x2, y2 = coords2
-                    if abs(x2-x1) <= 20:
+                    if abs(x2-x1) <= 10:
                         pt = 0
                     elif abs(x2-x1) <= 20:
-                        pt = abs(x2-x1)/600
+                        pt = abs(x2-x1)/550
                     elif abs(x2-x1) <= 40:
-                        pt = abs(x2-x1)/500
-                    else: pt = abs(x2-x1)/400
+                        pt = abs(x2-x1)/450
+                    else: pt = abs(x2-x1)/350
                     if x1 <= x2:
                         core.press_game_key("a",press_time=pt)
                     else:
                         core.press_game_key("d",press_time=pt)
                 else:
-                    if stop_event.wait(1.0): return
+                    if stop_event.wait(0.2): return
                     coords, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
                                                                 x1=940, y1=961, x2=1020, y2=993, 
                                                                 threshold=0.8)
                     if coords:
                         x, y = coords
                         if stop_event.wait(1.0): return
-                        #core.click_game_window2(x, y)
                         core.press_game_key("esc")
                         log_func(f"낚시 {fc}번 완료")
+                        if max_count >= fc:
+                            return
                         if stop_event.wait(1.0): return
                         break
                     else:

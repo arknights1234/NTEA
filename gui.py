@@ -91,8 +91,39 @@ class fishing:
 
     def build_settings_ui(self, parent_frame):
         current_config = load_config()
+        saved_count = current_config.get("fishing_settings", {}).get("max_count", "100")
         saved_option = current_config.get("fishing_settings", {}).get("bait", False)
         saved_option2 = current_config.get("fishing_settings", {}).get("sell", False)
+
+        count_frame = ctk.CTkFrame(parent_frame, fg_color="transparent")
+        count_frame.pack(fill="x", padx=10, pady=(10, 5))
+
+        lbl_count = ctk.CTkLabel(count_frame, text="최대 낚시 횟수 :", font=("맑은 고딕", 12))
+        lbl_count.pack(side="left", padx=(0, 10))
+
+        def validate_numeric(P):
+            if P == "" or P.isdigit():
+                return True
+            return False
+        
+        vcmd = (parent_frame.register(validate_numeric), '%P')
+
+        self.count_var = ctk.StringVar(value=str(saved_count))
+
+        self.count_var.trace_add("write", lambda *args: self.save_settings_live())
+
+        self.ent_count = ctk.CTkEntry(
+            count_frame, 
+            width=80, 
+            textvariable=self.count_var, 
+            justify="center",
+            validate="key",            # 키보드가 눌릴 때마다 검사하겠다는 의미
+            validatecommand=vcmd       # 검사할 때 위에서 만든 vcmd 함수를 실행
+        )
+        self.ent_count.pack(side="left")
+
+        lbl_unit = ctk.CTkLabel(count_frame, text="회", font=("맑은 고딕", 12))
+        lbl_unit.pack(side="left", padx=5)
         
         self.check_var = ctk.BooleanVar(value=saved_option)
         self.check_var2 = ctk.BooleanVar(value=saved_option2)
@@ -107,7 +138,7 @@ class fishing:
             parent_frame, 
             text="어획물 자동 판매", 
             variable=self.check_var2,
-            command=self.save_settings_live2
+            command=self.save_settings_live
         )
         self.chk_auto.pack(fill="x", padx=10, pady=10)
         self.chk_auto2.pack(fill="x", padx=10, pady=0)
@@ -120,23 +151,14 @@ class fishing:
         ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
 
     def save_settings_live(self):
-        current_state = self.check_var.get()
-        
         config = load_config()
         if "fishing_settings" not in config:
             config["fishing_settings"] = {}
             
-        config["fishing_settings"]["bait"] = current_state
-        save_config(config)
+        config["fishing_settings"]["max_count"] = self.count_var.get()
+        config["fishing_settings"]["bait"] = self.check_var.get()
+        config["fishing_settings"]["sell"] = self.check_var2.get()
 
-    def save_settings_live2(self):
-        current_state = self.check_var2.get()
-        
-        config = load_config()
-        if "fishing_settings" not in config:
-            config["fishing_settings"] = {}
-            
-        config["fishing_settings"]["sell"] = current_state
         save_config(config)
 
 class event_racing:
