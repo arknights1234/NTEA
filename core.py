@@ -195,25 +195,14 @@ def click_game_window2(x, y, window_title="NTE"):
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
     
-    if User32.IsIconic(target_hwnd):
-        User32.ShowWindow(target_hwnd, 9)
-    else:
-        User32.ShowWindow(target_hwnd, 5)
-        
-    User32.SetForegroundWindow(target_hwnd)
-    User32.SetActiveWindow(target_hwnd)
-    
-    time.sleep(0.1)
-
-
     orig_pos = wintypes.POINT()
     User32.GetCursorPos(ctypes.byref(orig_pos))
 
+    client_start_point = wintypes.POINT(0, 0)
+    User32.ClientToScreen(target_hwnd, ctypes.byref(client_start_point))
 
-    rect = wintypes.RECT()
-    User32.GetWindowRect(target_hwnd, ctypes.byref(rect))
-    abs_x = rect.left + x
-    abs_y = rect.top + y
+    abs_x = client_start_point.x + x
+    abs_y = client_start_point.y + y
 
     screen_width = User32.GetSystemMetrics(0)
     screen_height = User32.GetSystemMetrics(1)
