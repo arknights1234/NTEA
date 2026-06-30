@@ -117,8 +117,8 @@ class fishing:
             width=80, 
             textvariable=self.count_var, 
             justify="center",
-            validate="key",            # 키보드가 눌릴 때마다 검사하겠다는 의미
-            validatecommand=vcmd       # 검사할 때 위에서 만든 vcmd 함수를 실행
+            validate="key",
+            validatecommand=vcmd
         )
         self.ent_count.pack(side="left")
 
@@ -343,6 +343,70 @@ class owners_selection:
         )
         ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
 
+class bagel:
+    def __init__(self):
+        self.name = "베이글"
+        self.task_key = "run_bagel"
+
+    def build_settings_ui(self, parent_frame):
+        current_config = load_config()
+        saved_comment = current_config.get("bagel_settings", {}).get("comment_text", "great")
+        
+        comment_frame = ctk.CTkFrame(parent_frame, fg_color="transparent")
+        comment_frame.pack(fill="x", padx=10, pady=(10, 5))
+
+        lbl_comment = ctk.CTkLabel(comment_frame, text="작성할 댓글 문구 :", font=("맑은 고딕", 12))
+        lbl_comment.pack(side="left", padx=(0, 10))
+
+        self.comment_var = ctk.StringVar(value=str(saved_comment))
+        self.comment_var.trace_add("write", lambda *args: self.save_settings_live())
+
+        self.ent_comment = ctk.CTkEntry(
+            comment_frame, 
+            width=200, 
+            textvariable=self.comment_var, 
+            placeholder_text="5글자 이상 입력하세요"
+        )
+        self.ent_comment.pack(side="left", fill="x", expand=True)
+
+        self.lbl_warn = ctk.CTkLabel(parent_frame, text="", font=("맑은 고딕", 11))
+        self.lbl_warn.pack(anchor="w", padx=110, pady=(0, 5))
+
+        self.check_text_length(saved_comment)
+
+        usage_text = (
+            "베이글 열람 5회, 좋아요 3회, 댓글 3회 작성\n"
+            "댓글 문구 5글자 이상 필요\n"
+        )
+        ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
+
+    def check_text_length(self, text):
+        pure_text = text.replace(" ", "")
+        pure_len = len(pure_text)
+
+        if pure_len < 5:
+            self.lbl_warn.configure(
+                text=f"현재 {pure_len}글자 (5글자 이상 필요)", 
+                text_color="#ff4444"
+            )
+        else:
+            self.lbl_warn.configure(
+                text=f"등록 가능", 
+                text_color="#2e7d32"
+            )
+
+    def save_settings_live(self):
+        current_text = self.comment_var.get()
+        
+        self.check_text_length(current_text)
+
+        config = load_config()
+        if "bagel_settings" not in config:
+            config["bagel_settings"] = {}
+            
+        config["bagel_settings"]["comment_text"] = current_text
+        save_config(config)
+
 WNDPROC = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_uint, ctypes.c_int, ctypes.c_int)
 GWL_WNDPROC = -4
 
@@ -429,7 +493,8 @@ class MainGUI(ctk.CTk):
         self.active_listeners = []
         
 
-        self.tab1_tasks = [cafe_earning()]
+        self.tab1_tasks = [cafe_earning(),
+                           bagel()]
         self.tab2_tasks = [fishing(),
                            owners_selection(),
                            nanally_superjump(),

@@ -726,3 +726,482 @@ class MacroEngine:
                                                                 threshold=0.8)
                 if coords20:
                     return
+    
+    def run_bagel(self, stop_event, log_func):
+        """베이글 매크로 로직"""
+        config = load_config()
+        comment = config.get("bagel_settings", {}).get("comment_text", "great")
+        if stop_event.wait(1.0): return
+        for i in range(3):
+            if stop_event.wait(1.0): return
+            coords, err = core.find_image_in_cropped_zone(template_path="images/베이글/베이글.png", 
+                                                            x1=1630, y1=575, x2=1704, y2=652, 
+                                                            threshold=0.8)
+            if coords:
+                x, y = coords
+                if stop_event.wait(1.0): return
+                core.click_game_window2(x, y)
+                break
+            else: core.press_game_key("esc")
+            if i == 2:
+                return
+            
+        if stop_event.wait(3.0): return
+        core.active_window()
+        core.scroll_game_window(x=960,y=540,direction="down",clicks=16)
+        
+        like = 0
+
+        #게시물1
+        #==================================
+
+        if stop_event.wait(1.0): return
+        core.click_game_window2(520, 459)
+
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords2, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                            x1=896, y1=892, x2=1060, y2=936, 
+                                                            threshold=0.8)
+            if coords2:
+                x, y = coords2
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                like = like + 1
+                break
+        
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords3, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글.png", 
+                                                            x1=1371, y1=955, x2=1491, y2=1010, 
+                                                            threshold=0.8)
+            if coords3:
+                x, y = coords3
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+                    
+        if stop_event.wait(1.0): return
+        core.type_game_string(comment)
+
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords4, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글확인.png", 
+                                                            x1=1717, y1=949, x2=1790, y2=986, 
+                                                            threshold=0.8)
+            if coords4:
+                x, y = coords4
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+            
+        for i in range(10):
+            if stop_event.wait(0.2): return
+            coords5, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글딜레이.png", 
+                                                            x1=826, y1=514, x2=905, y2=564, 
+                                                            threshold=0.8)
+            if coords5:
+                x, y = coords5
+                if stop_event.wait(5.0): return
+                for i in range(5):
+                    if stop_event.wait(1.0): return
+                    coords6, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글.png", 
+                                                                    x1=1371, y1=955, x2=1491, y2=1010, 
+                                                                    threshold=0.8)
+                    if coords6:
+                        x, y = coords6
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 4:
+                        return
+                for i in range(5):
+                    if stop_event.wait(1.0): return
+                    coords7, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글확인.png", 
+                                                                    x1=1717, y1=949, x2=1790, y2=986, 
+                                                                    threshold=0.8)
+                    if coords7:
+                        x, y = coords7
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 4:
+                        return
+                    
+                break
+                
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords8, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                            x1=1813, y1=39, x2=1852, y2=79, 
+                                                            threshold=0.8)
+            if coords8:
+                x, y = coords8
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+        
+        #게시물2
+        #==================================
+
+        if stop_event.wait(1.0): return
+        core.click_game_window2(912, 447)
+
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords9, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                            x1=896, y1=892, x2=1060, y2=936, 
+                                                            threshold=0.8)
+            if coords9:
+                x, y = coords9
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                like = like + 1
+                break
+        
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords10, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글.png", 
+                                                            x1=1371, y1=955, x2=1491, y2=1010, 
+                                                            threshold=0.8)
+            if coords10:
+                x, y = coords10
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+                    
+        if stop_event.wait(1.0): return
+        core.type_game_string(comment)
+
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords11, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글확인.png", 
+                                                            x1=1717, y1=949, x2=1790, y2=986, 
+                                                            threshold=0.8)
+            if coords11:
+                x, y = coords11
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+            
+        for i in range(10):
+            if stop_event.wait(0.2): return
+            coords12, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글딜레이.png", 
+                                                            x1=826, y1=514, x2=905, y2=564, 
+                                                            threshold=0.8)
+            if coords12:
+                x, y = coords12
+                if stop_event.wait(5.0): return
+                for i in range(5):
+                    if stop_event.wait(1.0): return
+                    coords13, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글.png", 
+                                                                    x1=1371, y1=955, x2=1491, y2=1010, 
+                                                                    threshold=0.8)
+                    if coords13:
+                        x, y = coords13
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 4:
+                        return
+                for i in range(5):
+                    if stop_event.wait(1.0): return
+                    coords14, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글확인.png", 
+                                                                    x1=1717, y1=949, x2=1790, y2=986, 
+                                                                    threshold=0.8)
+                    if coords14:
+                        x, y = coords14
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 4:
+                        return
+                    
+                break
+                
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords15, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                            x1=1813, y1=39, x2=1852, y2=79, 
+                                                            threshold=0.8)
+            if coords15:
+                x, y = coords15
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+            
+
+        #게시물3
+        #==================================
+
+        if stop_event.wait(1.0): return
+        core.click_game_window2(1318, 543)
+
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords16, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                            x1=896, y1=892, x2=1060, y2=936, 
+                                                            threshold=0.8)
+            if coords16:
+                x, y = coords16
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                like = like + 1
+                break
+        
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords17, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글.png", 
+                                                            x1=1371, y1=955, x2=1491, y2=1010, 
+                                                            threshold=0.8)
+            if coords17:
+                x, y = coords17
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+                    
+        if stop_event.wait(1.0): return
+        core.type_game_string(comment)
+
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords18, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글확인.png", 
+                                                            x1=1717, y1=949, x2=1790, y2=986, 
+                                                            threshold=0.8)
+            if coords18:
+                x, y = coords18
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+            
+        for i in range(10):
+            if stop_event.wait(0.2): return
+            coords19, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글딜레이.png", 
+                                                            x1=826, y1=514, x2=905, y2=564, 
+                                                            threshold=0.8)
+            if coords19:
+                x, y = coords19
+                if stop_event.wait(5.0): return
+                for i in range(5):
+                    if stop_event.wait(1.0): return
+                    coords20, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글.png", 
+                                                                    x1=1371, y1=955, x2=1491, y2=1010, 
+                                                                    threshold=0.8)
+                    if coords20:
+                        x, y = coords20
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 4:
+                        return
+                for i in range(5):
+                    if stop_event.wait(1.0): return
+                    coords21, err = core.find_image_in_cropped_zone(template_path="images/베이글/댓글확인.png", 
+                                                                    x1=1717, y1=949, x2=1790, y2=986, 
+                                                                    threshold=0.8)
+                    if coords21:
+                        x, y = coords21
+                        if stop_event.wait(0.1): return
+                        core.click_game_window2(x, y)
+                        break
+                    if i == 4:
+                        return
+                    
+                break
+                
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords22, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                            x1=1813, y1=39, x2=1852, y2=79, 
+                                                            threshold=0.8)
+            if coords22:
+                x, y = coords22
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+            
+        #게시물4
+        #==================================
+
+        if stop_event.wait(1.0): return
+        core.click_game_window2(1720, 543)
+
+        if like < 3:
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords23, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                                x1=896, y1=892, x2=1060, y2=936, 
+                                                                threshold=0.8)
+                if coords23:
+                    x, y = coords23
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    like = like + 1
+                    break
+        
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords24, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                            x1=1813, y1=39, x2=1852, y2=79, 
+                                                            threshold=0.8)
+            if coords24:
+                x, y = coords24
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+            
+
+        #게시물5
+        #==================================
+
+        if stop_event.wait(1.0): return
+        core.click_game_window2(526,964)
+
+        if like < 3:
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords25, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                                x1=896, y1=892, x2=1060, y2=936, 
+                                                                threshold=0.8)
+                if coords25:
+                    x, y = coords25
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    like = like + 1
+                    break
+        
+        for i in range(5):
+            if stop_event.wait(1.0): return
+            coords26, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                            x1=1813, y1=39, x2=1852, y2=79, 
+                                                            threshold=0.8)
+            if coords26:
+                x, y = coords26
+                if stop_event.wait(0.1): return
+                core.click_game_window2(x, y)
+                break
+            if i == 4:
+                return
+            
+        #게시물6
+        #==================================
+
+        if like < 3:
+            if stop_event.wait(1.0): return
+            core.click_game_window2(912,964)
+
+        
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords27, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                                x1=896, y1=892, x2=1060, y2=936, 
+                                                                threshold=0.8)
+                if coords27:
+                    x, y = coords27
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    like = like + 1
+                    break
+        
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords28, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                                x1=1813, y1=39, x2=1852, y2=79, 
+                                                                threshold=0.8)
+                if coords28:
+                    x, y = coords28
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 4:
+                    return
+                
+        #게시물7
+        #==================================
+
+        if like < 3:
+            if stop_event.wait(1.0): return
+            core.click_game_window2(1324,990)
+
+        
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords28, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                                x1=896, y1=892, x2=1060, y2=936, 
+                                                                threshold=0.8)
+                if coords28:
+                    x, y = coords28
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    like = like + 1
+                    break
+        
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords29, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                                x1=1813, y1=39, x2=1852, y2=79, 
+                                                                threshold=0.8)
+                if coords29:
+                    x, y = coords29
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 4:
+                    return
+                
+        #게시물8
+        #==================================
+
+        if like < 3:
+            if stop_event.wait(1.0): return
+            core.click_game_window2(1728,988)
+
+        
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords29, err = core.find_image_in_cropped_zone(template_path="images/베이글/좋아요.png", 
+                                                                x1=896, y1=892, x2=1060, y2=936, 
+                                                                threshold=0.8)
+                if coords29:
+                    x, y = coords29
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    like = like + 1
+                    break
+        
+            for i in range(5):
+                if stop_event.wait(1.0): return
+                coords30, err = core.find_image_in_cropped_zone(template_path="images/베이글/엑스.png", 
+                                                                x1=1813, y1=39, x2=1852, y2=79, 
+                                                                threshold=0.8)
+                if coords30:
+                    x, y = coords30
+                    if stop_event.wait(0.1): return
+                    core.click_game_window2(x, y)
+                    break
+                if i == 4:
+                    return
+            
+        if stop_event.wait(1.0): return
+        core.press_game_key("esc")
+        return
