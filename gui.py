@@ -11,6 +11,9 @@ import win32con
 import win32gui
 import ctypes
 import version
+import os
+import sys
+from PIL import Image, ImageTk
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -523,6 +526,26 @@ class MainGUI(ctk.CTk):
         keyboard.add_hotkey('f2', self.trigger_stop_by_hotkey)
 
         self.overlay = None
+
+        if hasattr(sys, '_MEIPASS'):
+            icon_path = os.path.join(sys._MEIPASS, "images/icon.ico")
+        else:
+            icon_path = os.path.abspath("images/icon.ico")
+
+        if os.path.exists(icon_path):
+            self.iconbitmap(icon_path)
+            try:
+                icon_img = Image.open(icon_path)
+                photo = ImageTk.PhotoImage(icon_img)
+                self.wm_iconphoto(False, photo)
+            except Exception as e:
+                self.iconbitmap(icon_path)
+            
+            try:
+                myappid = 'mycompany.myproduct.subproduct.version'
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+            except Exception:
+                pass
 
     def trigger_stop_by_hotkey(self):
         if not self.running_tabs:
