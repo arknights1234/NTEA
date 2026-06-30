@@ -510,7 +510,7 @@ class MacroEngine:
         core.click_game_active_window()
         if stop_event.wait(0.3): return
         core.click_game_active_window()
-        if stop_event.wait(0.445 + delay): return
+        if stop_event.wait(0.43 + delay): return
         core.press_game_key("space")
 
         log_func("나나리 슈퍼 점프")
