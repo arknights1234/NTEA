@@ -387,7 +387,7 @@ class MacroEngine:
                         if stop_event.wait(1.0): return
                         core.press_game_key("esc")
                         log_func(f"낚시 {fc}번 완료")
-                        if max_count >= fc:
+                        if max_count <= fc:
                             return
                         if stop_event.wait(1.0): return
                         break
