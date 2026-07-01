@@ -234,11 +234,11 @@ class MacroEngine:
                 
                 for i in range(3):
                     if stop_event.wait(1.0): return
-                    coords3, err = core.find_image_in_cropped_zone(template_path="images/낚시/판매확인.png", 
+                    coords33, err = core.find_image_in_cropped_zone(template_path="images/낚시/판매확인.png", 
                                                                 x1=1140, y1=689, x2=1200, y2=723, 
                                                                 threshold=0.8)
-                    if coords3:
-                        x, y = coords3
+                    if coords33:
+                        x, y = coords33
                         if stop_event.wait(1.0): return
                         core.click_game_window2(x, y)
                         break
@@ -249,11 +249,11 @@ class MacroEngine:
 
                 for i in range(3):
                     if stop_event.wait(1.0): return
-                    coords4, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
+                    coords44, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
                                                                 x1=934, y1=937, x2=1020, y2=974, 
                                                                 threshold=0.8)
-                    if coords4:
-                        x, y = coords4
+                    if coords44:
+                        x, y = coords44
                         if stop_event.wait(1.0): return
                         core.click_game_window2(x, y)
                         if stop_event.wait(1.0): return
@@ -379,11 +379,11 @@ class MacroEngine:
                         core.press_game_key("d",press_time=pt)
                 else:
                     if stop_event.wait(0.2): return
-                    coords, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
+                    coords11, err = core.find_image_in_cropped_zone(template_path="images/낚시/터치해.png", 
                                                                 x1=940, y1=961, x2=1020, y2=993, 
                                                                 threshold=0.8)
-                    if coords:
-                        x, y = coords
+                    if coords11:
+                        x, y = coords11
                         if stop_event.wait(1.0): return
                         core.press_game_key("esc")
                         log_func(f"낚시 {fc}번 완료")
