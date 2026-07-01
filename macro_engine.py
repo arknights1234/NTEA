@@ -221,11 +221,11 @@ class MacroEngine:
                         return
                 for i in range(3):
                     if stop_event.wait(1.0): return
-                    coords2, err = core.find_image_in_cropped_zone(template_path="images/낚시/일괄판매.png", 
+                    coords22, err = core.find_image_in_cropped_zone(template_path="images/낚시/일괄판매.png", 
                                                                 x1=1012, y1=950, x2=1115, y2=984, 
                                                                 threshold=0.8)
-                    if coords2:
-                        x, y = coords2
+                    if coords22:
+                        x, y = coords22
                         if stop_event.wait(1.0): return
                         core.click_game_window2(x, y)
                         break
