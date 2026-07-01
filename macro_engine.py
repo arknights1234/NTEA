@@ -393,7 +393,7 @@ class MacroEngine:
                         break
                     else:
                         c = c + 1
-                        if c > 15:
+                        if c > 50:
                             break
 
         log_func("낚시 종료")
