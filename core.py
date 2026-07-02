@@ -168,8 +168,14 @@ def click_game_active_window():
     time.sleep(0.05)
     ctypes.windll.user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 
+def click_game_active_window2():
+    ctypes.windll.user32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+    time.sleep(0.01)
+    ctypes.windll.user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+
 def click_game_window(x, y, window_title="NTE"):
     active_window(window_title)
+    time.sleep(0.05)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -190,6 +196,7 @@ def click_game_window(x, y, window_title="NTE"):
 
 def click_game_window2(x, y, window_title="NTE"):
     active_window(window_title)
+    time.sleep(0.05)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -245,10 +252,11 @@ def active_window(window_title="NTE"):
         
     User32.SetForegroundWindow(target_hwnd)
     User32.SetActiveWindow(target_hwnd)
-    time.sleep(0.05)
+    
 
 def press_game_key(key_name, press_time=0.05, window_title="NTE"):
     active_window(window_title)
+    time.sleep(0.05)
     target_hwnd = _get_game_hwnd(window_title)
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
@@ -278,7 +286,7 @@ def press_game_key_down(key_name, window_title="NTE"):
 
     try:
         User32.PostMessageW(target_hwnd, WM_KEYDOWN, key_code, 0)
-        time.sleep(0.05) 
+        time.sleep(0.001) 
         return True, None
     except Exception as e:
         return False, f"키 입력 메시지 주입 실패: {str(e)}"
@@ -302,6 +310,7 @@ def press_game_key_up(key_name, window_title="NTE"):
 
 def type_game_string(text, window_title="NTE"):
     active_window(window_title)
+    time.sleep(0.05)
     target_hwnd = _get_game_hwnd(window_title)
     if not target_hwnd:
         return False, f"'{window_title}' 창을 찾을 수 없습니다."
@@ -316,6 +325,7 @@ def type_game_string(text, window_title="NTE"):
     
 def scroll_game_window(x, y, direction="down", clicks=1, window_title="NTE"):
     active_window(window_title)
+    time.sleep(0.05)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -363,6 +373,7 @@ def find_image_in_cropped_zone(template_path, x1, y1, x2, y2, threshold=0.8):
 
 def rotate_camera(dx, dy, window_title="NTE"):
     active_window(window_title)
+    time.sleep(0.05)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:
@@ -386,6 +397,7 @@ def rotate_camera(dx, dy, window_title="NTE"):
 
 def capture_with_mss(x1, y1, x2, y2, window_title="NTE"):
     active_window(window_title)
+    time.sleep(0.05)
     target_hwnd = _get_game_hwnd(window_title)
 
     if not target_hwnd:

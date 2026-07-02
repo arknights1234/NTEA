@@ -410,6 +410,58 @@ class bagel:
         config["bagel_settings"]["comment_text"] = current_text
         save_config(config)
 
+class jump_cancel:
+    def __init__(self):
+        self.name = "평타 캔슬"
+        self.task_key = "run_jump_cancel"
+        self.is_listening = False
+
+    def build_settings_ui(self, parent_frame):
+        config = load_config()
+        settings = config.get("jump_cancel_setting", {})
+        saved_key = settings.get("key", "caps lock")
+
+        self.key_label = ctk.CTkLabel(parent_frame, text=f"현재 단축키: [{saved_key}]", font=("맑은 고딕", 13))
+        self.key_label.pack(pady=(10, 5))
+        ctk.CTkButton(parent_frame, text="단축키 변경", command=self.start_listening).pack()
+
+        usage_text = (
+            "나나리, 라크리모사 등 평타 캔슬용\n"
+            "단축키는 마우스 버튼도 가능\n"
+            "매크로 실행 후 게임 화면에서 단축키를 눌러서 사용"
+        )
+        ctk.CTkLabel(parent_frame, text=usage_text, justify="left", font=("맑은 고딕", 12)).pack(pady=10)
+
+    def start_listening(self):
+        self.is_listening = True
+        self.key_label.configure(text="키보드나 마우스 버튼을 누르세요...", text_color="#f1c40f")
+
+        def on_key(event):
+            if self.is_listening:
+                self.save_key(event.name)
+                self.is_listening = False
+                keyboard.unhook(on_key)
+        keyboard.hook(on_key)
+
+        def on_click(x, y, button, pressed):
+            if pressed and self.is_listening:
+                self.save_key(f"mouse_{button.name}") 
+                self.is_listening = False
+                m_listener.stop()
+                keyboard.unhook(on_key)
+
+        m_listener = mouse.Listener(on_click=on_click)
+        m_listener.start()
+
+    def save_key(self, key):
+        config = load_config()
+        if "jump_cancel_setting" not in config:
+            config["jump_cancel_setting"] = {}
+        config["jump_cancel_setting"]["key"] = key
+        save_config(config)
+        
+        self.key_label.configure(text=f"현재 단축키: [{key}]", text_color="#2ecc71")
+
 WNDPROC = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_uint, ctypes.c_int, ctypes.c_int)
 GWL_WNDPROC = -4
 
@@ -501,6 +553,7 @@ class MainGUI(ctk.CTk):
         self.tab2_tasks = [fishing(),
                            owners_selection(),
                            nanally_superjump(),
+                           jump_cancel(),
                            mouse_auto_click()]
         self.tab3_tasks = [event_racing()]
 
@@ -542,7 +595,7 @@ class MainGUI(ctk.CTk):
                 self.iconbitmap(icon_path)
             
             try:
-                myappid = 'mycompany.myproduct.subproduct.version'
+                myappid = 'ntea'
                 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
             except Exception:
                 pass
@@ -730,6 +783,13 @@ class MainGUI(ctk.CTk):
                         start_callback=lambda t=task: self.engine.execute_task_by_hotkey(t, log_widget),
                         stop_callback=lambda: self.engine.stop_macro_by_hotkey(log_widget)
                     )
+                    manager.start(key)
+                    self.active_listeners.append(manager)
+
+                elif task.task_key == "run_jump_cancel":
+                    key = config.get("jump_cancel_setting", {}).get("key", "caps lock")
+                    is_hotkey_task_present = True
+                    manager = HotkeyManager(lambda t=task: self.engine.execute_task_by_hotkey(t, log_widget))
                     manager.start(key)
                     self.active_listeners.append(manager)
 

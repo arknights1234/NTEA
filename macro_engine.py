@@ -10,7 +10,7 @@ class MacroEngine:
         self.stop_event = threading.Event()
 
         self.last_execution_time = 0
-        self.cooldown_duration = 1.0
+        self.cooldown_duration = 0.5
 
     def execute_task_by_hotkey(self, task, log_widget):
         def async_wrapper():
@@ -1205,3 +1205,12 @@ class MacroEngine:
         if stop_event.wait(1.0): return
         core.press_game_key("esc")
         return
+    
+    def run_jump_cancel(self, stop_event, log_func):
+        """평타 캔슬 매크로 로직"""
+        core.press_game_key_down("space")
+        core.click_game_active_window2()
+        core.press_game_key_up("space")
+        core.click_game_active_window2()
+
+        log_func("평타 캔슬")
